@@ -10,7 +10,7 @@ const router = express.Router();
 // pagination et sorting
 router.get("/restaurants", async (req, res) => {
   try {
-    // const {page, limit} = req.query;
+    // const { limit } = req.query;
     const { type } = req.query;
     const response = await axios.get(process.env.HAPPY_COW_API);
     let page = 1;
