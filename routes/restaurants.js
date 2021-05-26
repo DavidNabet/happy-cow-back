@@ -7,6 +7,8 @@ const { haversine } = require("../utils/distance");
 // Ils doivent être filtrés par rapport à la géolocalisation du telephone
 // On commencera par les plus pertinents
 
+const Localisation = require("../models/Localisation");
+
 // pagination et sorting
 router.get("/restaurants", async (req, res) => {
   try {
@@ -42,7 +44,7 @@ router.get("/restaurants", async (req, res) => {
   }
 });
 
-router.get("/restaurant/:id", async (req, res) => {
+router.get("/resto/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const response = await axios.get(process.env.HAPPY_COW_API);
@@ -82,5 +84,32 @@ router.get("/restaurants/around", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
+router.post("/restaurants/send", async (req, res) => {
+  try {
+    const { latitude, longitude } = req.fields;
+    const newLoc = new Localisation({
+      location: [latitude, longitude],
+    });
+    await newLoc.save();
+    res.status(200).json({
+      location: newLoc.location,
+    });
+  } catch (error) {
+    console.log(error.response);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// router.get("/restaurants/getData", async (req, res) => {
+//   try {
+//     const location = await Localisation.find();
+//     console.log(location);
+//     // res.status(200).json(location);
+//   } catch (error) {
+//     console.log(error.response);
+//     res.status(400).json({ message: error.message });
+//   }
+// });
 
 module.exports = router;
