@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const Localisation = mongoose.model("Localisation", {
   location: {
-    type: [Number],
+    type: [Number], // Longitude et latitude
+    index: "2d",
   },
 });
 
