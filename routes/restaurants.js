@@ -7,20 +7,22 @@ const { haversine } = require("../utils/distance");
 // Ils doivent être filtrés par rapport à la géolocalisation du telephone
 // On commencera par les plus pertinents
 
-const Localisation = require("../models/Localisation");
+const User = require("../models/User");
 
 // pagination et sorting
 router.get("/restaurants", async (req, res) => {
   try {
     // const { limit } = req.query;
-    const { type, limit } = req.query;
+    let { type, limit, rayon } = req.query;
+    const user = await User.findOne();
     const response = await axios.get(process.env.HAPPY_COW_API);
     let page = 1;
     // let limit = 100;
+    // let rayon = 0.2;
     let results;
 
     // Filtre par type
-    if (type) {
+    if (type && limit) {
       results = _(response.data)
         .filter({ type: type })
         .orderBy(["name", "rating"], ["asc", "desc"])
@@ -35,6 +37,13 @@ router.get("/restaurants", async (req, res) => {
       .take(limit)
       .value();
 
+    if (rayon && limit && type) {
+      let result = haversine(user.location, response.data, rayon);
+      results = _(result)
+        .drop((page - 1) * limit)
+        .take(limit)
+        .value();
+    }
     // console.log(results);
 
     res.status(200).json(results);
@@ -85,31 +94,17 @@ router.get("/restaurants/around", async (req, res) => {
   }
 });
 
-router.post("/restaurants/send", async (req, res) => {
+router.get("/restaurants/data", async (req, res) => {
   try {
-    const { latitude, longitude } = req.fields;
-    const newLoc = new Localisation({
-      location: [latitude, longitude],
-    });
-    await newLoc.save();
-    res.status(200).json({
-      location: newLoc.location,
-    });
+    const user = await User.findOne();
+    const response = await axios.get(process.env.HAPPY_COW_API);
+    let distance = haversine(user.location, response.data, 0.2);
+
+    res.status(200).json({ distance: distance });
   } catch (error) {
     console.log(error.response);
     res.status(400).json({ message: error.message });
   }
 });
-
-// router.get("/restaurants/getData", async (req, res) => {
-//   try {
-//     const location = await Localisation.find();
-//     console.log(location);
-//     // res.status(200).json(location);
-//   } catch (error) {
-//     console.log(error.response);
-//     res.status(400).json({ message: error.message });
-//   }
-// });
 
 module.exports = router;

@@ -6,6 +6,10 @@ const User = mongoose.model("User", {
   hash: String,
   token: String,
   salt: String,
+  location: {
+    type: [Number], // Longitude et latitude
+    index: "2d",
+  },
 });
 
 module.exports = User;

@@ -15,9 +15,9 @@ mongoose.connect(NODE_ENV === "development" ? MONGO_LOCAL_URI : MONGO_URI, {
 
 app.use(formidable());
 app.use(cors());
-app.use(express.json({ limit: "50mb" }));
+// app.use(express.json({ limit: "50mb" }));
 
-// app.use("/user", require("./routes/user"));
+app.use("/user", require("./routes/user"));
 app.use(require("./routes/restaurants"));
 
 app.get("/", (req, res) => {
