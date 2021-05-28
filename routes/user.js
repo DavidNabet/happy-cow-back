@@ -91,9 +91,9 @@ router.put("/update/:id", isAuthenticated, async (req, res) => {
         { new: true }
       );
 
-      res.json(201).json(userUpdated);
+      return res.json(201).json(userUpdated);
     } else {
-      res.json(400).json({ message: "Précisez votre id utilisateur" });
+      return res.json(400).json({ message: "Précisez votre id utilisateur" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
