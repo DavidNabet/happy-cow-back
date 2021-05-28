@@ -4,7 +4,7 @@ const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-const { NODE_ENV, MONGO_LOCAL_URI, PORT } = process.env;
+const { NODE_ENV, MONGO_LOCAL_URI, PORT, MONGO_URI } = process.env;
 
 mongoose.connect(NODE_ENV === "development" ? MONGO_LOCAL_URI : MONGO_URI, {
   useNewUrlParser: true,
