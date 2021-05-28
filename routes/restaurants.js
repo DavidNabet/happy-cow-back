@@ -13,18 +13,23 @@ const User = require("../models/User");
 router.get("/restaurants", async (req, res) => {
   try {
     // const { limit } = req.query;
-    let { type, rayon } = req.query;
+    let { type, rayon, limit } = req.query;
     const user = await User.findOne();
     const response = await axios.get(process.env.HAPPY_COW_API);
     let page = 1;
-    let limit = 100;
+    // let limit = 100;
     let rayonDefault = 3;
     let resultsType;
     let resultsRayon;
+    let limitDefault = 100;
     let results;
 
     if (rayon === undefined) {
       rayon = rayonDefault;
+    }
+
+    if (limit === undefined) {
+      limit = limitDefault;
     }
     // Filtre par type
     if (type) {
@@ -45,16 +50,16 @@ router.get("/restaurants", async (req, res) => {
     // Filtre par rayon
     let result = haversine(user.location, resultsType, rayon);
     resultsRayon = _(result)
-      .drop((page - 1) * limit)
+      .drop(page - 1 * limit)
       .take(limit)
       .value();
 
-    if (!type && !rayon) {
-      results = resultsType;
-    } else {
-      results = resultsRayon;
-    }
-
+    // if (!type && !rayon) {
+    //   results = resultsType;
+    // } else {
+    //   results = resultsRayon;
+    // }
+    results = resultsRayon;
     // console.log(results);
 
     res.status(200).json(results);
