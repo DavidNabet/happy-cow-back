@@ -16,8 +16,8 @@ router.get("/restaurants", async (req, res) => {
     let { type, rayon, limit } = req.query;
     const user = await User.findOne();
     const response = await axios.get(process.env.HAPPY_COW_API);
-    let page = 1;
     // let limit = 100;
+    let page = 1;
     let rayonDefault = 3;
     let resultsType;
     let resultsRayon;
@@ -34,16 +34,16 @@ router.get("/restaurants", async (req, res) => {
     // Filtre par type
     if (type) {
       resultsType = _(response.data)
-        .filter({ type: type })
-        .orderBy(["name", "rating"], ["asc", "desc"])
         .drop((page - 1) * limit)
         .take(limit)
+        .filter({ type: type })
+        .orderBy(["name", "rating"], ["asc", "desc"])
         .value();
     } else {
       resultsType = _(response.data)
-        .orderBy(["name", "rating"], ["asc", "desc"])
         .drop((page - 1) * limit)
         .take(limit)
+        .orderBy(["name", "rating"], ["asc", "desc"])
         .value();
     }
 
@@ -54,11 +54,6 @@ router.get("/restaurants", async (req, res) => {
       .take(limit)
       .value();
 
-    // if (!type && !rayon) {
-    //   results = resultsType;
-    // } else {
-    //   results = resultsRayon;
-    // }
     results = resultsRayon;
     // console.log(results);
 
