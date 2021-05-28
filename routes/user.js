@@ -1,17 +1,19 @@
 const express = require("express");
 const User = require("../models/User");
 const uid2 = require("uid2");
+const isAuthenticated = require("../middleware/isAuthenticated");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
-const cloudinary = require("cloudinary").v2;
+// const cloudinary = require("cloudinary").v2;
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
+    // location
     const { email, username, password, location } = req.fields;
     let userExist = await User.findOne({ email });
     if (!userExist) {
-      if (email && password && username && location) {
+      if (email && password && username) {
         // le salt
         const salt = uid2(16);
         // le password hashé
@@ -25,7 +27,7 @@ router.post("/signup", async (req, res) => {
           token: token,
           hash: hashPassword,
           salt: salt,
-          location: [location[0], location[1]],
+          location: [0, 0],
         });
 
         await newUser.save();
@@ -71,6 +73,30 @@ router.post("/login", async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+router.put("/update/:id", isAuthenticated, async (req, res) => {
+  try {
+    const { email, username, location } = req.fields;
+    const updateUser = {};
+    if (email) updateUser.email = email;
+    if (username) updateUser.username = username;
+    if (location) updateUser.location = [location[0], location[1]];
+
+    if (req.params.id) {
+      const userUpdated = await User.findByIdAndUpdate(
+        req.params.id,
+        { $set: updateUser },
+        { new: true }
+      );
+
+      res.json(201).json(userUpdated);
+    } else {
+      res.json(400).json({ message: "Précisez votre id utilisateur" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 });
 

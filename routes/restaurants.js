@@ -21,7 +21,6 @@ router.get("/restaurants", async (req, res) => {
     let rayonDefault = 3;
     let resultsType;
     let resultsRayon;
-    let resultsLimit;
     let results;
 
     if (rayon === undefined) {
