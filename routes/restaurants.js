@@ -3,7 +3,6 @@ const _ = require("lodash");
 const axios = require("axios");
 const router = express.Router();
 const { haversine } = require("../utils/distance");
-const queryString = require("query-string");
 // Les 100 premiers résultats
 // Ils doivent être filtrés par rapport à la géolocalisation du telephone
 // On commencera par les plus pertinents
@@ -15,7 +14,7 @@ const User = require("../models/User");
 router.get("/restaurants", async (req, res) => {
   try {
     // const { limit } = req.query;
-    let { type, rayon, limit, category } = req.query;
+    let { type, rayon, limit } = req.query;
     const user = await User.findOne();
     const response = await axios.get(process.env.HAPPY_COW_API);
     // let limit = 100;
@@ -25,7 +24,7 @@ router.get("/restaurants", async (req, res) => {
     let resultsRayon;
     let categoryDefault = 0;
     let limitDefault = 10;
-    let resultsCategory;
+    // let resultsCategory;
 
     if (rayon === undefined) {
       rayon = rayonDefault;
