@@ -31,6 +31,8 @@ const distance = (lat1, lng1, lat2, lng2) => {
 
 const haversine = (maPosition, locationsResto, rayon) => {
   // let maPosition = [48.856614, 2.3522219];
+  // maPosition.lat,
+  // maPosition.lng,
 
   // let locations = [
   //   { lng: 2.306483, lat: 48.856312 },

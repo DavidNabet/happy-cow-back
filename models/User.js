@@ -1,4 +1,8 @@
 const mongoose = require("mongoose");
+// location: {
+//   lat: Number,
+//   lng: Number,
+// },
 
 const User = mongoose.model("User", {
   email: { type: String, unique: true, required: true },

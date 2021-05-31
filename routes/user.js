@@ -76,6 +76,10 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// updateUser.location = {
+//   lat: location.lat,
+//   lng: location.lng,
+// };
 router.put("/update/:id", isAuthenticated, async (req, res) => {
   try {
     const { email, username, location } = req.fields;
@@ -83,7 +87,6 @@ router.put("/update/:id", isAuthenticated, async (req, res) => {
     if (email) updateUser.email = email;
     if (username) updateUser.username = username;
     if (location) updateUser.location = [location[0], location[1]];
-
     if (req.params.id) {
       const userUpdated = await User.findByIdAndUpdate(
         req.params.id,
@@ -91,9 +94,7 @@ router.put("/update/:id", isAuthenticated, async (req, res) => {
         { new: true }
       );
 
-      return res.json(201).json(userUpdated);
-    } else {
-      return res.json(400).json({ message: "Précisez votre id utilisateur" });
+      res.json(201).json(userUpdated);
     }
   } catch (error) {
     res.status(400).json({ message: error.message });

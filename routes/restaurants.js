@@ -3,6 +3,7 @@ const _ = require("lodash");
 const axios = require("axios");
 const router = express.Router();
 const { haversine } = require("../utils/distance");
+const queryString = require("query-string");
 // Les 100 premiers résultats
 // Ils doivent être filtrés par rapport à la géolocalisation du telephone
 // On commencera par les plus pertinents
@@ -10,6 +11,7 @@ const { haversine } = require("../utils/distance");
 const User = require("../models/User");
 
 // pagination et sorting
+
 router.get("/restaurants", async (req, res) => {
   try {
     // const { limit } = req.query;
@@ -21,12 +23,28 @@ router.get("/restaurants", async (req, res) => {
     let rayonDefault = 3;
     let resultsType;
     let resultsRayon;
-    let limitDefault = 100;
+    let limitDefault = 10;
     let results;
 
     if (rayon === undefined) {
       rayon = rayonDefault;
     }
+
+    // let q = queryString.parse("type=vegan,vegetarian,veg-options,Ice+Cream", {
+    //   arrayFormat: "comma",
+    // });
+    // console.log(q);
+
+    /*
+      type[]=vegan&type[]=vegetarian&type[]=veg-options&type[]=Ice+Cream
+    type:[
+      "vegan",
+      "vegetarian",
+      "veg-options",
+      "Ice Cream"
+    ]
+    
+    */
 
     if (limit === undefined) {
       limit = limitDefault;
@@ -50,7 +68,7 @@ router.get("/restaurants", async (req, res) => {
     // Filtre par rayon
     let result = haversine(user.location, resultsType, rayon);
     resultsRayon = _(result)
-      .drop(page - 1 * limit)
+      .drop((page - 1) * limit)
       .take(limit)
       .value();
 
@@ -69,7 +87,6 @@ router.get("/resto/:id", async (req, res) => {
   try {
     const response = await axios.get(process.env.HAPPY_COW_API);
     let result = response.data.find((elem) => elem.placeId === Number(id));
-    console.log(result);
     res.status(200).json(result);
   } catch (err) {
     console.log(error.response);
