@@ -80,7 +80,7 @@ router.post("/login", async (req, res) => {
 //   lat: location.lat,
 //   lng: location.lng,
 // };
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", isAuthenticated, async (req, res) => {
   try {
     // let userUpdated;
     // console.log(req.user);
