@@ -9,7 +9,6 @@ const isAuthenticated = async (req, res, next) => {
         token: req.headers.authorization.replace("Bearer ", ""),
       });
       // console.log(user);
-      console.log(user);
       if (!user) {
         // res.status(400).json({ error: "Connectez-vous !" });
         console.log("Connectez-vous !");

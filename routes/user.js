@@ -83,7 +83,7 @@ router.post("/login", async (req, res) => {
 router.put("/update/:id", async (req, res) => {
   try {
     // let userUpdated;
-    console.log(req.user);
+    // console.log(req.user);
     const { email, username, location } = req.fields;
     const updateUser = {};
     if (email) updateUser.email = email;
