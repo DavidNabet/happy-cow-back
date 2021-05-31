@@ -96,9 +96,11 @@ router.put("/update/:id", async (req, res) => {
       { new: true }
     );
     // }
-    res.json(201).json(userUpdated);
+    // res.json(201).json(userUpdated);
+    console.log(userUpdated);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    // res.status(400).json({ message: error.message });
+    console.log("message update ", error.message);
   }
 });
 

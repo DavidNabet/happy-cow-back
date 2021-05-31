@@ -22,7 +22,8 @@ const isAuthenticated = async (req, res, next) => {
       // return res.status(401).json({ error: "Non authorisé !" });
     }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    // res.status(400).json({ message: error.message });
+    console.log(error);
   }
 };
 
