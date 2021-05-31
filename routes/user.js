@@ -80,22 +80,23 @@ router.post("/login", async (req, res) => {
 //   lat: location.lat,
 //   lng: location.lng,
 // };
-router.put("/update/:id", isAuthenticated, async (req, res) => {
+router.put("/update/:id", async (req, res) => {
   try {
+    // let userUpdated;
+    console.log(req.user);
     const { email, username, location } = req.fields;
     const updateUser = {};
     if (email) updateUser.email = email;
     if (username) updateUser.username = username;
     if (location) updateUser.location = [location[0], location[1]];
-    if (req.params.id) {
-      const userUpdated = await User.findByIdAndUpdate(
-        req.params.id,
-        { $set: updateUser },
-        { new: true }
-      );
-
-      res.json(201).json(userUpdated);
-    }
+    // if (req.params.id) {
+    const userUpdated = await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateUser },
+      { new: true }
+    );
+    // }
+    res.json(201).json(userUpdated);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

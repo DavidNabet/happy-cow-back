@@ -15,7 +15,7 @@ const User = require("../models/User");
 router.get("/restaurants", async (req, res) => {
   try {
     // const { limit } = req.query;
-    let { type, rayon, limit } = req.query;
+    let { type, rayon, limit, category } = req.query;
     const user = await User.findOne();
     const response = await axios.get(process.env.HAPPY_COW_API);
     // let limit = 100;
@@ -23,8 +23,9 @@ router.get("/restaurants", async (req, res) => {
     let rayonDefault = 3;
     let resultsType;
     let resultsRayon;
+    let categoryDefault = 0;
     let limitDefault = 10;
-    let results;
+    let resultsCategory;
 
     if (rayon === undefined) {
       rayon = rayonDefault;
@@ -46,10 +47,24 @@ router.get("/restaurants", async (req, res) => {
     
     */
 
+    // function filterType() {
+    //   let tab = [];
+    //   if (n.length > 1) {
+    //     tab.concat(filter({ type: type[i] }));
+    //   } else {
+    //   }
+    // }
+
+    if (category === undefined) {
+      category = categoryDefault;
+    }
+
     if (limit === undefined) {
       limit = limitDefault;
     }
     // Filtre par type
+    // _(response.data).filter(filterType);
+    //
     if (type) {
       resultsType = _(response.data)
         .drop((page - 1) * limit)
@@ -63,7 +78,25 @@ router.get("/restaurants", async (req, res) => {
         .take(limit)
         .orderBy(["name", "rating"], ["asc", "desc"])
         .value();
+
+      // resultsType = filterType(resultsType)
+      //   .orderBy(["name", "rating"], ["asc", "desc"])
+      //   .value();
+      // console.log(resultsType);
     }
+
+    // if (category) {
+    //   resultsCategory = _(response.data)
+    //     .drop((page - 1) * limit)
+    //     .take(limit)
+    //     .filter({ category: category })
+    //     .value();
+    // } else {
+    //   resultsCategory = _(response.data)
+    //     .drop((page - 1) * limit)
+    //     .take(limit)
+    //     .value();
+    // }
 
     // Filtre par rayon
     let result = haversine(user.location, resultsType, rayon);
@@ -72,7 +105,13 @@ router.get("/restaurants", async (req, res) => {
       .take(limit)
       .value();
 
+    // if (type && rayon) {
+    //   results = resultsRayon;
+    // } else {
+    //   results = resultsCategory;
+    // }
     results = resultsRayon;
+
     // console.log(results);
 
     res.status(200).json(results);
