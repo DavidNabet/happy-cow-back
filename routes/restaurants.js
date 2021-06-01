@@ -3,7 +3,6 @@ const _ = require("lodash");
 const axios = require("axios");
 const router = express.Router();
 const { haversine } = require("../utils/distance");
-const queryString = require("query-string");
 // Les 100 premiers résultats
 // Ils doivent être filtrés par rapport à la géolocalisation du telephone
 // On commencera par les plus pertinents
@@ -15,7 +14,7 @@ const User = require("../models/User");
 router.get("/restaurants", async (req, res) => {
   try {
     // const { limit } = req.query;
-    let { type, rayon, limit, category } = req.query;
+    let { type, rayon, limit } = req.query;
     const user = await User.findOne();
     const response = await axios.get(process.env.HAPPY_COW_API);
     // let limit = 100;
@@ -23,9 +22,8 @@ router.get("/restaurants", async (req, res) => {
     let rayonDefault = 3;
     let resultsType;
     let resultsRayon;
-    let resultsFinal;
     // let categoryDefault = 0;
-    let limitDefault = 10;
+    let limitDefault = 100;
     // let resultsCategory;
 
     /*
@@ -38,47 +36,18 @@ router.get("/restaurants", async (req, res) => {
     ]
     
     */
-    function filterType() {
-      // console.log(req.query.type);
+    function filterType(data) {
       let splited;
-      for (let i = 0; i < response.data.length; i++) {
-        splited = response.data.filter(({ type }) =>
-          req.query.type.includes(type)
-        );
+      for (let i = 0; i < data.length; i++) {
+        splited = _(data)
+          .drop((page - 1) * limit)
+          .take(limit)
+          .filter(({ type }) => req.query.type.includes(type))
+          .value();
       }
       return splited;
     }
-    console.log(filterType());
-    // let tab = {};
-    // tabTab.forEach((value, name) => {
-    //   tab[name] = "";
-    //   for (let i = 0; i < value.length; i++) {
-    //     tab[name] += value[i];
-    //   }
-    // });
-    // splited = req.query.type.split(" ");
-    // splited.forEach((value, index) => {
-    //   if (value.length >= 1) {
-    //     splited.concat(type[index]);
-    //   }
-    //   // if (v.length > 1) {
-    //   //   tab.concat(filter({ type: type[i] }));
-    //   // } else {
-    //   //   tab.push(type[i]);
-    //   // }
-    // });
-
-    // resultsFinal = _(response.data).filter((item) => {
-    //   // type.includes(req.query.type);
-
-    //   console.log(item.type);
-    // });
-
-    // return resultsFinal;
-
-    // if (category === undefined) {
-    //   category = categoryDefault;
-    // }
+    // console.log(filterType());
 
     if (rayon === undefined) {
       rayon = rayonDefault;
@@ -89,8 +58,7 @@ router.get("/restaurants", async (req, res) => {
     }
     // Filtre par type
     // _(response.data).filter(filterType);
-    //
-    if (type) {
+    if (typeof req.query.type === "string") {
       resultsType = _(response.data)
         .drop((page - 1) * limit)
         .take(limit)
@@ -105,23 +73,14 @@ router.get("/restaurants", async (req, res) => {
         .value();
     }
 
+    if (typeof req.query.type === "object") {
+      resultsType = filterType(response.data);
+    }
+
     // resultsType = filterType(resultsType)
     //   .orderBy(["name", "rating"], ["asc", "desc"])
     //   .value();
     // console.log(resultsType);
-
-    // if (category) {
-    //   resultsCategory = _(response.data)
-    //     .drop((page - 1) * limit)
-    //     .take(limit)
-    //     .filter({ category: category })
-    //     .value();
-    // } else {
-    //   resultsCategory = _(response.data)
-    //     .drop((page - 1) * limit)
-    //     .take(limit)
-    //     .value();
-    // }
 
     // Filtre par rayon
     let result = haversine(user.location, resultsType, rayon);
@@ -137,8 +96,6 @@ router.get("/restaurants", async (req, res) => {
     // }
     results = resultsRayon;
 
-    // console.log(results);
-
     res.status(200).json(results);
   } catch (error) {
     console.log(error.response);
@@ -153,7 +110,7 @@ router.get("/resto/:id", async (req, res) => {
     let result = response.data.find((elem) => elem.placeId === Number(id));
     res.status(200).json(result);
   } catch (err) {
-    console.log(error.response);
+    console.log(error);
     res.status(400).json({ message: error.message });
   }
 });
