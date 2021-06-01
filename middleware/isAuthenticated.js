@@ -8,7 +8,6 @@ const isAuthenticated = async (req, res, next) => {
 
     if (!user) {
       res.status(400).json({ error: "Connectez-vous !" });
-      console.log("Connectez-vous !");
     } else {
       req.user = user;
       return next();

@@ -3,6 +3,7 @@ const _ = require("lodash");
 const axios = require("axios");
 const router = express.Router();
 const { haversine } = require("../utils/distance");
+const queryString = require("query-string");
 // Les 100 premiers résultats
 // Ils doivent être filtrés par rapport à la géolocalisation du telephone
 // On commencera par les plus pertinents
@@ -14,7 +15,7 @@ const User = require("../models/User");
 router.get("/restaurants", async (req, res) => {
   try {
     // const { limit } = req.query;
-    let { type, rayon, limit } = req.query;
+    let { type, rayon, limit, category } = req.query;
     const user = await User.findOne();
     const response = await axios.get(process.env.HAPPY_COW_API);
     // let limit = 100;
@@ -22,18 +23,10 @@ router.get("/restaurants", async (req, res) => {
     let rayonDefault = 3;
     let resultsType;
     let resultsRayon;
-    let categoryDefault = 0;
+    let resultsFinal;
+    // let categoryDefault = 0;
     let limitDefault = 10;
     // let resultsCategory;
-
-    if (rayon === undefined) {
-      rayon = rayonDefault;
-    }
-
-    // let q = queryString.parse("type=vegan,vegetarian,veg-options,Ice+Cream", {
-    //   arrayFormat: "comma",
-    // });
-    // console.log(q);
 
     /*
       type[]=vegan&type[]=vegetarian&type[]=veg-options&type[]=Ice+Cream
@@ -45,17 +38,50 @@ router.get("/restaurants", async (req, res) => {
     ]
     
     */
-
-    // function filterType() {
-    //   let tab = [];
-    //   if (n.length > 1) {
-    //     tab.concat(filter({ type: type[i] }));
-    //   } else {
+    function filterType() {
+      // console.log(req.query.type);
+      let splited;
+      for (let i = 0; i < response.data.length; i++) {
+        splited = response.data.filter(({ type }) =>
+          req.query.type.includes(type)
+        );
+      }
+      return splited;
+    }
+    console.log(filterType());
+    // let tab = {};
+    // tabTab.forEach((value, name) => {
+    //   tab[name] = "";
+    //   for (let i = 0; i < value.length; i++) {
+    //     tab[name] += value[i];
     //   }
+    // });
+    // splited = req.query.type.split(" ");
+    // splited.forEach((value, index) => {
+    //   if (value.length >= 1) {
+    //     splited.concat(type[index]);
+    //   }
+    //   // if (v.length > 1) {
+    //   //   tab.concat(filter({ type: type[i] }));
+    //   // } else {
+    //   //   tab.push(type[i]);
+    //   // }
+    // });
+
+    // resultsFinal = _(response.data).filter((item) => {
+    //   // type.includes(req.query.type);
+
+    //   console.log(item.type);
+    // });
+
+    // return resultsFinal;
+
+    // if (category === undefined) {
+    //   category = categoryDefault;
     // }
 
-    if (category === undefined) {
-      category = categoryDefault;
+    if (rayon === undefined) {
+      rayon = rayonDefault;
     }
 
     if (limit === undefined) {
@@ -77,12 +103,12 @@ router.get("/restaurants", async (req, res) => {
         .take(limit)
         .orderBy(["name", "rating"], ["asc", "desc"])
         .value();
-
-      // resultsType = filterType(resultsType)
-      //   .orderBy(["name", "rating"], ["asc", "desc"])
-      //   .value();
-      // console.log(resultsType);
     }
+
+    // resultsType = filterType(resultsType)
+    //   .orderBy(["name", "rating"], ["asc", "desc"])
+    //   .value();
+    // console.log(resultsType);
 
     // if (category) {
     //   resultsCategory = _(response.data)
