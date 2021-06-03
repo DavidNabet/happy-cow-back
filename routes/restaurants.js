@@ -58,11 +58,6 @@ router.get("/restaurants", async (req, res) => {
       resultsType = filterType(response.data);
     }
 
-    // resultsType = filterType(resultsType)
-    //   .orderBy(["name", "rating"], ["asc", "desc"])
-    //   .value();
-    // console.log(resultsType);
-
     // Filtre par rayon
     let result = haversine(user.location, resultsType, rayon);
     resultsRayon = _(result)
@@ -92,34 +87,6 @@ router.get("/resto/:id", async (req, res) => {
     res.status(200).json(result);
   } catch (err) {
     console.log(error);
-    res.status(400).json({ message: error.message });
-  }
-});
-
-router.get("/restaurants/around", async (req, res) => {
-  try {
-    const { lat, lng } = req.query;
-    const response = await axios.get(process.env.HAPPY_COW_API);
-    let results;
-    if (lat && lng) {
-      results = _.map(
-        response.data,
-        _.partialRight(_.pick, [
-          "placeId",
-          "name",
-          "address",
-          "location",
-          "category",
-          "type",
-        ])
-      );
-      // res.status(200).json(results);
-    } else {
-      results = response.data;
-    }
-    res.status(200).json(results);
-  } catch (error) {
-    console.log(error.response);
     res.status(400).json({ message: error.message });
   }
 });
