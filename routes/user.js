@@ -4,9 +4,9 @@ const uid2 = require("uid2");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
-// const cloudinary = require("cloudinary").v2;
 const router = express.Router();
 
+// Inscription
 router.post("/signup", async (req, res) => {
   try {
     // location
@@ -48,6 +48,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// Connexion
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.fields;
@@ -76,10 +77,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// updateUser.location = {
-//   lat: location.lat,
-//   lng: location.lng,
-// };
+// Mise à jour des informations de l'utilisateur
 router.put("/update/:id", isAuthenticated, async (req, res) => {
   try {
     const { email, username, location } = req.fields;
