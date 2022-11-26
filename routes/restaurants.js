@@ -8,6 +8,16 @@ const User = require("../models/User");
 // pagination et sorting
 
 router.get("/restaurants", async (req, res) => {
+  /*
+      type[]=vegan&type[]=vegetarian&type[]=veg-options&type[]=Ice+Cream
+    type:[
+      "vegan",
+      "vegetarian",
+      "veg-options",
+      "Ice Cream"
+    ]
+    
+    */
   try {
     let { type, rayon, limit } = req.query;
     const user = await User.findOne();
@@ -70,7 +80,7 @@ router.get("/restaurants", async (req, res) => {
     // } else {
     //   results = resultsCategory;
     // }
-    results = resultsRayon;
+    let results = resultsRayon;
 
     res.status(200).json(results);
   } catch (error) {
@@ -86,7 +96,36 @@ router.get("/resto/:id", async (req, res) => {
     let result = response.data.find((elem) => elem.placeId === Number(id));
     res.status(200).json(result);
   } catch (err) {
-    console.log(error);
+    console.log(err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.get("/restaurants/around", async (req, res) => {
+  try {
+    const { lat, lng } = req.query;
+    const response = await axios.get(process.env.HAPPY_COW_API);
+    let results;
+    if (lat && lng) {
+      results = _.map(
+        response.data,
+        _.partialRight(_.pick, [
+          "placeId",
+          "name",
+          "address",
+          "location",
+          "category",
+          "type",
+        ])
+      );
+      res.status(200).json(results);
+    } else {
+      results = response.data;
+      res.status(202).json(results);
+    }
+    // res.status(200).json(results);
+  } catch (error) {
+    console.log(error.response);
     res.status(400).json({ message: error.message });
   }
 });

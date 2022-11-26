@@ -81,7 +81,7 @@ router.post("/login", async (req, res) => {
 router.put("/update/:id", isAuthenticated, async (req, res) => {
   try {
     const { email, username, location } = req.fields;
-    const updateUser = {};
+    let updateUser = {};
     if (email) updateUser.email = email;
     if (username) updateUser.username = username;
     if (location) updateUser.location = [location[0], location[1]];

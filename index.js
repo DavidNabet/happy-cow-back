@@ -8,12 +8,7 @@ const app = express();
 const { NODE_ENV, MONGO_LOCAL_URI, PORT, MONGO_URI } = process.env;
 
 // Database connection
-mongoose.connect(NODE_ENV === "development" ? MONGO_LOCAL_URI : MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-});
+mongoose.connect(NODE_ENV === "development" ? MONGO_LOCAL_URI : MONGO_URI);
 
 app.use(formidable());
 app.use(cors());
@@ -29,6 +24,6 @@ app.all("*", (req, res) => {
   res.status(404).json({ error: "Cette page n'existe pas !" });
 });
 
-app.listen(PORT || 3200, () => {
+app.listen(PORT, () => {
   console.log("Server proccess");
 });
