@@ -4,6 +4,7 @@ const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const paginate = require("./middleware/paginationMiddleware");
 const app = express();
 const { NODE_ENV, MONGO_LOCAL_URI, PORT, MONGO_URI } = process.env;
 
@@ -12,6 +13,8 @@ mongoose.connect(NODE_ENV === "development" ? MONGO_LOCAL_URI : MONGO_URI);
 
 app.use(formidable());
 app.use(cors());
+app.use(express.urlencoded({ extended: false, limit: "1600kb" }));
+app.use(express.json({ limit: "1600kb" }));
 
 app.use("/user", require("./routes/user"));
 app.use(require("./routes/restaurants"));
