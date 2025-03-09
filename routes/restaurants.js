@@ -1,6 +1,5 @@
 const fs = require("fs");
 const express = require("express");
-const _ = require("lodash");
 const axios = require("axios");
 const router = express.Router();
 const { haversine } = require("../utils/distance");
@@ -9,6 +8,7 @@ const resto = require("../utils/restaurants.json");
 const paginationMiddleware = require("../middleware/paginationMiddleware");
 const getQueryParams = require("../utils/params");
 const filterRestaurantsByType = require("../utils/filter");
+const { partialRight } = require("../utils/function");
 
 // pagination et sorting
 
@@ -89,17 +89,14 @@ router.get("/restaurants/around", async (req, res) => {
     const response = await axios.get(process.env.HAPPY_COW_API);
     let results;
     if (lat && lng) {
-      results = _.map(
-        response.data,
-        _.partialRight(_.pick, [
-          "placeId",
-          "name",
-          "address",
-          "location",
-          "category",
-          "type",
-        ])
-      );
+      results = response.data.map((elem) => ({
+        placeId: elem.placeId,
+        name: elem.name,
+        address: elem.address,
+        location: elem.location,
+        category: elem.category,
+        type: elem.type,
+      }));
       res.status(200).json(results);
     }
     results = response.data;
@@ -120,11 +117,6 @@ router.get("/restaurants/data", paginationMiddleware, async (req, res) => {
     let distance = haversine(user.location, resto, 2);
     const total = distance.length;
     const totalPages = Math.ceil(total / context.limit);
-    // if (context.searchTerm) {
-    //   results = user.filter(({ username }) => username.match(context.search));
-    // } else {
-    //   results = user;
-    // }
     if (context.searchTerm) {
       distance = distance.filter(({ type }) => type.match(context.search));
     }
@@ -135,7 +127,6 @@ router.get("/restaurants/data", paginationMiddleware, async (req, res) => {
       totalPages,
     };
 
-    // results = results.slice(context.skip, context.skip + context.limit);
     res.status(200).json({
       pagination,
       data: distance,
