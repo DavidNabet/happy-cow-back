@@ -1,15 +1,14 @@
-const fs = require("fs");
-const express = require("express");
-const axios = require("axios");
-const router = express.Router();
-const { haversine } = require("../utils/distance");
-const User = require("../models/User");
-const resto = require("../utils/restaurants.json");
-const paginationMiddleware = require("../middleware/paginationMiddleware");
-const getQueryParams = require("../utils/params");
-const filterRestaurantsByType = require("../utils/filter");
-const { partialRight } = require("../utils/function");
+import express from "express";
+import axios from "axios";
+import { haversine } from "../utils/distance.js";
+import User from "../models/User.js";
+import resto from "../utils/restaurants.json" assert { type: "json" };
+import paginationMiddleware from "../middleware/paginationMiddleware.js";
+import getQueryParams from "../utils/params.js";
+import filterRestaurantsByType from "../utils/filter.js";
 
+const router = express.Router();
+// const resto = JSON.parse(fs.readFileSync("utils/restaurants.json", "utf-8"));
 // pagination et sorting
 
 const HAPPY_COW_API = process.env.HAPPY_COW_API ?? "";
@@ -74,7 +73,7 @@ router.get("/restaurants", async (req, res) => {
 router.get("/resto/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await axios.get(process.env.HAPPY_COW_API);
+    const response = await axios.get(HAPPY_COW_API);
     let result = response.data.find((elem) => elem.placeId === Number(id));
     res.status(200).json(result);
   } catch (err) {
@@ -86,7 +85,7 @@ router.get("/resto/:id", async (req, res) => {
 router.get("/restaurants/around", async (req, res) => {
   try {
     const { lat, lng } = req.query;
-    const response = await axios.get(process.env.HAPPY_COW_API);
+    const response = await axios.get(HAPPY_COW_API);
     let results;
     if (lat && lng) {
       results = response.data.map((elem) => ({
@@ -156,4 +155,4 @@ router.get("/restaurants/params", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

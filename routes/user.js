@@ -1,9 +1,10 @@
-const express = require("express");
-const User = require("../models/User");
-const uid2 = require("uid2");
-const isAuthenticated = require("../middleware/isAuthenticated");
-const SHA256 = require("crypto-js/sha256");
-const encBase64 = require("crypto-js/enc-base64");
+import express from "express";
+import User from "../models/User.js";
+import uid2 from "uid2";
+import SHA256 from "crypto-js/sha256.js";
+import encBase64 from "crypto-js/enc-base64.js";
+import isAuthenticated from "../middleware/isAuthenticated.js";
+
 const router = express.Router();
 
 // Inscription
@@ -99,4 +100,4 @@ router.put("/update/:id", isAuthenticated, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -20,4 +20,4 @@ const getQueryParams = (query) => {
 };
 
 console.log(getQueryParams("?b[]=1&b[]=2&a=abc&c[]=1&d=3"));
-module.exports = getQueryParams;
+export default getQueryParams;

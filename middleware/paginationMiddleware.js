@@ -16,4 +16,4 @@ const paginationMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = paginationMiddleware;
+export default paginationMiddleware;

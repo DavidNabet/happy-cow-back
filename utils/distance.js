@@ -27,7 +27,7 @@ const distance = (lat1, lng1, lat2, lng2) => {
   return rayonTerre * distanceKm;
 };
 
-const haversine = (maPosition, locationsResto, rayon) => {
+export const haversine = (maPosition, locationsResto, rayon) => {
   // let maPosition = [48.856614, 2.3522219];
   let tab = [];
   let dist;
@@ -44,9 +44,4 @@ const haversine = (maPosition, locationsResto, rayon) => {
     }
   }
   return tab;
-};
-
-module.exports = {
-  distance: distance,
-  haversine: haversine,
 };

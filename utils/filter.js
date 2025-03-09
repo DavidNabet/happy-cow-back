@@ -8,4 +8,4 @@ const filterRestaurantsByType = (restaurants, type, page, limit) => {
   return restaurants.filter((restaurant) => restaurant.type === type);
 };
 
-module.exports = filterRestaurantsByType;
+export default filterRestaurantsByType;
